@@ -1,0 +1,20 @@
+package com.vlad28x.tasktracker.service;
+
+import com.vlad28x.tasktracker.dto.TaskRequestDto;
+import com.vlad28x.tasktracker.dto.TaskResponseDto;
+
+import java.util.List;
+
+public interface TaskService {
+
+    List<TaskResponseDto> getAll();
+
+    TaskResponseDto getById(Long id);
+
+    TaskResponseDto create(TaskRequestDto newTask);
+
+    TaskResponseDto update(TaskRequestDto newTask);
+
+    void delete(Long id);
+
+}
