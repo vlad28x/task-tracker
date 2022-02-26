@@ -43,8 +43,8 @@ public class TaskServiceImpl implements TaskService {
             throw new BadRequestException("Task ID must not be null");
         }
         return TaskMapper.taskToTaskResponseDto(taskRepository.findById(id).orElseThrow(() -> {
-           log.error(String.format("Task with ID %s is not found", id));
-           return new NotFoundException(String.format("Task with ID %s isn not found", id));
+            log.error(String.format("Task with ID %s is not found", id));
+            return new NotFoundException(String.format("Task with ID %s isn not found", id));
         }));
     }
 
