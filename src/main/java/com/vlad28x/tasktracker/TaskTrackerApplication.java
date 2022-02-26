@@ -15,12 +15,7 @@ import javax.persistence.EntityManagerFactory;
 public class TaskTrackerApplication {
 
     public static void main(String[] args) {
-        ApplicationContext context = SpringApplication.run(TaskTrackerApplication.class, args);
-        EntityManagerFactory factory = (EntityManagerFactory) context.getBean("entityManagerFactory");
-        EntityManager manager = factory.createEntityManager();
-        manager.getTransaction().begin();
-        manager.persist(Project.builder().name("proj44").priority(2).status(ProjectStatus.ACTIVE).build());
-        manager.getTransaction().commit();
+        SpringApplication.run(TaskTrackerApplication.class, args);
     }
 
 }
