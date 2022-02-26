@@ -3,17 +3,13 @@ package com.vlad28x.tasktracker.entity;
 import com.vlad28x.tasktracker.entity.enums.TaskStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
 
 @Entity
 @Data
-@SuperBuilder
-@NoArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class Task extends AbstractEntity {
