@@ -2,8 +2,8 @@
 
 ## Overview
 Task tracker is an application for managing tasks of projects.
-The application is developed using Spring Boot.
-Deployed on heroku: https://task-tracker-vlad28x.herokuapp.com/
+The application is developed using Spring Boot.<br/>
+Deployed on heroku: https://task-tracker-vlad28x.herokuapp.com/<br/>
 Swagger UI: https://task-tracker-vlad28x.herokuapp.com/swagger-ui/
 
 ## Features
