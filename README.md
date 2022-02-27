@@ -9,7 +9,7 @@ The application is developed using Spring Boot.
 * Using Swagger for automated API documentation
 * The logic level covers unit tests
 * Ability to create/view/edit/delete information about projects
-* Ability to create/view/edit / delete task information
+* Ability to create/view/edit/delete task information
 * Ability to add and remove tasks from a project
 * Ability to view all tasks in the project
 * Ability to filter projects with various methods and by various fields
