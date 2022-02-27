@@ -21,31 +21,31 @@ public class TaskController {
     }
 
     @GetMapping
-    @ApiOperation("View a list of tasks")
+    @ApiOperation("View the list of tasks")
     public ResponseEntity<List<TaskResponseDto>> getAllTasks() {
         return ResponseEntity.ok(taskService.getAll());
     }
 
     @GetMapping("/{id}")
-    @ApiOperation("Search a task with an ID")
+    @ApiOperation("Search the task with an ID")
     public ResponseEntity<TaskResponseDto> getTaskById(@PathVariable Long id) {
         return ResponseEntity.ok(taskService.getById(id));
     }
 
     @PostMapping
-    @ApiOperation("Add a task")
+    @ApiOperation("Add the task")
     public ResponseEntity<TaskResponseDto> createTask(@RequestBody TaskRequestDto newTask) {
         return ResponseEntity.status(HttpStatus.CREATED).body(taskService.create(newTask));
     }
 
     @PutMapping("/{id}")
-    @ApiOperation("Update a task")
+    @ApiOperation("Update the task")
     public ResponseEntity<TaskResponseDto> updateTask(@PathVariable Long id, @RequestBody TaskRequestDto newTask) {
         newTask.setId(id);
         return ResponseEntity.ok(taskService.update(newTask));
     }
 
-    @ApiOperation("Delete a task")
+    @ApiOperation("Delete the task")
     @DeleteMapping("/{id}")
     public void deleteTask(@PathVariable Long id) {
         taskService.delete(id);

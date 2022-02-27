@@ -2,6 +2,7 @@ package com.vlad28x.tasktracker.service.impl;
 
 import com.vlad28x.tasktracker.dto.ProjectRequestDto;
 import com.vlad28x.tasktracker.dto.ProjectResponseDto;
+import com.vlad28x.tasktracker.entity.Project;
 import com.vlad28x.tasktracker.exception.BadRequestException;
 import com.vlad28x.tasktracker.exception.NotFoundException;
 import com.vlad28x.tasktracker.repository.ProjectRepository;
@@ -38,22 +39,15 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional(readOnly = true)
     @Override
     public ProjectResponseDto getById(Long id) {
-        if (id == null) {
-            log.error("Project ID must not be null");
-            throw new BadRequestException("Project ID must not be null");
-        }
-        return ProjectMapper.projectToProjectResponseDto(projectRepository.findById(id).orElseThrow(() -> {
-            log.error(String.format("Project with ID %s is not found", id));
-            return new NotFoundException(String.format("Project with ID %s is not found", id));
-        }));
+        return ProjectMapper.projectToProjectResponseDto(findById(id));
     }
 
     @Transactional
     @Override
     public ProjectResponseDto create(ProjectRequestDto newProject) {
         if (newProject == null) {
-            log.error("Project must not be null");
-            throw new BadRequestException("Project must not be null");
+            log.error("The project must not be null");
+            throw new BadRequestException("The project must not be null");
         }
         try {
             newProject.setId(null);
@@ -61,8 +55,8 @@ public class ProjectServiceImpl implements ProjectService {
                     ProjectMapper.projectRequestDroToProject(newProject)
             ));
         } catch (NestedRuntimeException e) {
-            log.error(e.getMessage(), e.getCause());
-            throw new BadRequestException(e.getMessage());
+            log.error(e.getMessage(), e);
+            throw new BadRequestException(e.getMessage(), e);
         }
     }
 
@@ -70,20 +64,20 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponseDto update(ProjectRequestDto newProject) {
         if (newProject == null || newProject.getId() == null) {
-            log.error("Project or ID must not be null");
-            throw new BadRequestException("Project or ID must not be null");
+            log.error("The project or ID must not be null");
+            throw new BadRequestException("The project or ID must not be null");
         } else if (projectRepository.existsById(newProject.getId())) {
             try {
                 return ProjectMapper.projectToProjectResponseDto(projectRepository.save(
                         ProjectMapper.projectRequestDroToProject(newProject)
                 ));
             } catch (NestedRuntimeException e) {
-                log.error(e.getMessage(), e.getCause());
-                throw new BadRequestException(e.getMessage(), e.getCause());
+                log.error(e.getMessage(), e);
+                throw new BadRequestException(e.getMessage(), e);
             }
         } else {
-            log.error(String.format("Project with ID %s is not found", newProject.getId()));
-            throw new NotFoundException(String.format("Project with ID %s is not found", newProject.getId()));
+            log.error(String.format("The project with ID %s is not found", newProject.getId()));
+            throw new NotFoundException(String.format("The project with ID %s is not found", newProject.getId()));
         }
     }
 
@@ -91,10 +85,21 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void delete(Long id) {
         if (id == null) {
-            log.error("Project ID must not be null");
-            throw new BadRequestException("Project ID must not be null");
+            log.error("The project ID must not be null");
+            throw new BadRequestException("The project ID must not be null");
         }
         projectRepository.deleteById(id);
+    }
+
+    protected Project findById(Long id) {
+        if (id == null) {
+            log.error("The project ID must not be null");
+            throw new BadRequestException("The project ID must not be null");
+        }
+        return projectRepository.findById(id).orElseThrow(() -> {
+            log.error(String.format("The project with ID %s is not found", id));
+            return new NotFoundException(String.format("The project with ID %s is not found", id));
+        });
     }
 
 }
