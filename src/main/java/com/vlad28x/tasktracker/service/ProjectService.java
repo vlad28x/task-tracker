@@ -13,7 +13,7 @@ public interface ProjectService {
 
     ProjectResponseDto create(ProjectRequestDto newProject);
 
-    ProjectResponseDto update(ProjectRequestDto newProject);
+    ProjectResponseDto update(Long id, ProjectRequestDto newProject);
 
     void delete(Long id);
 

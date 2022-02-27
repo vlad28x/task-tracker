@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
@@ -16,5 +18,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Modifying
     @Query("update Task t set t.project.id = null where t.id = :taskId")
     Integer removeTaskFromProject(Long taskId);
+
+    List<Task> findAllByProjectId(Long projectId);
 
 }

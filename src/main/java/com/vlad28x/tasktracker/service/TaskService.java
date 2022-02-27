@@ -13,12 +13,14 @@ public interface TaskService {
 
     TaskResponseDto create(TaskRequestDto newTask);
 
-    TaskResponseDto update(TaskRequestDto newTask);
+    TaskResponseDto update(Long id, TaskRequestDto newTask);
 
     void delete(Long id);
 
     TaskResponseDto addTaskToProject(Long projectId, Long taskId);
 
     TaskResponseDto removeTaskFromProject(Long projectId, Long taskId);
+
+    List<TaskResponseDto> getAllTasksFromProject(Long projectId);
 
 }

@@ -66,23 +66,14 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto update(TaskRequestDto newTask) {
-        if (newTask == null || newTask.getId() == null) {
-            log.error("The task or ID must not be null");
-            throw new BadRequestException("The task or ID must not be null");
-        } else if (taskRepository.existsById(newTask.getId())) {
-            try {
-                return TaskMapper.taskToTaskResponseDto(taskRepository.save(
-                        TaskMapper.taskRequestDtoToTask(newTask)
-                ));
-            } catch (NestedRuntimeException e) {
-                log.error(e.getMessage(), e);
-                throw new BadRequestException(e.getMessage(), e);
-            }
-        } else {
-            log.error(String.format("The task with ID %s is not found", newTask.getId()));
-            throw new NotFoundException(String.format("The task with ID %s is not found", newTask.getId()));
+    public TaskResponseDto update(Long id, TaskRequestDto newTask) {
+        if (newTask == null) {
+            log.error("The task must not be null");
+            throw new BadRequestException("The task must not be null");
         }
+        Task task = findById(id);
+        setPropertiesFromTaskRequestDtoToTask(task, newTask);
+        return TaskMapper.taskToTaskResponseDto(taskRepository.save(task));
     }
 
     @Transactional
@@ -105,8 +96,7 @@ public class TaskServiceImpl implements TaskService {
             throw new BadRequestException(String.format("The task with ID %s already has a project with ID %s", taskId, task.getProject().getId()));
         }
         task.setProject(project);
-        taskRepository.addTaskToProject(projectId, taskId);
-        return TaskMapper.taskToTaskResponseDto(task);
+        return TaskMapper.taskToTaskResponseDto(taskRepository.save(task));
     }
 
     @Transactional
@@ -122,8 +112,15 @@ public class TaskServiceImpl implements TaskService {
             throw new BadRequestException(String.format("The task with ID %s is missing in the project with ID %s", taskId, projectId));
         }
         task.setProject(null);
-        taskRepository.removeTaskFromProject(taskId);
-        return TaskMapper.taskToTaskResponseDto(task);
+        return TaskMapper.taskToTaskResponseDto(taskRepository.save(task));
+    }
+
+    @Override
+    public List<TaskResponseDto> getAllTasksFromProject(Long projectId) {
+        projectService.findById(projectId);
+        return taskRepository.findAllByProjectId(projectId).stream()
+                .map(TaskMapper::taskToTaskResponseDto)
+                .collect(Collectors.toList());
     }
 
     protected Task findById(Long id) {
@@ -135,6 +132,18 @@ public class TaskServiceImpl implements TaskService {
             log.error(String.format("The task with ID %s is not found", id));
             return new NotFoundException(String.format("The task with ID %s is not found", id));
         });
+    }
+
+    protected void setPropertiesFromTaskRequestDtoToTask(Task task, TaskRequestDto dto) {
+        if (dto.getName() != null) task.setName(dto.getName());
+        if (dto.getDescription() != null) task.setDescription(dto.getDescription());
+        if (dto.getPriority() != null) task.setPriority(dto.getPriority());
+        if (dto.getStatus() != null) task.setStatus(dto.getStatus());
+        if (dto.getProjectId() != null) {
+            Project project = new Project();
+            project.setId(dto.getProjectId());
+            task.setProject(project);
+        }
     }
 
 }

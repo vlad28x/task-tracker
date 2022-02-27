@@ -41,8 +41,7 @@ public class TaskController {
     @PutMapping("/{id}")
     @ApiOperation("Update the task")
     public ResponseEntity<TaskResponseDto> updateTask(@PathVariable Long id, @RequestBody TaskRequestDto newTask) {
-        newTask.setId(id);
-        return ResponseEntity.ok(taskService.update(newTask));
+        return ResponseEntity.ok(taskService.update(id, newTask));
     }
 
     @ApiOperation("Delete the task")

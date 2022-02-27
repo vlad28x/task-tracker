@@ -45,8 +45,7 @@ public class ProjectController {
     @PutMapping("/{id}")
     @ApiOperation("Update the project")
     public ResponseEntity<ProjectResponseDto> updateProject(@PathVariable Long id, @RequestBody ProjectRequestDto newProject) {
-        newProject.setId(id);
-        return ResponseEntity.ok(projectService.update(newProject));
+        return ResponseEntity.ok(projectService.update(id, newProject));
     }
 
     @DeleteMapping("/{id}")
@@ -65,6 +64,12 @@ public class ProjectController {
     @ApiOperation("Remove the task from the project")
     public ResponseEntity<TaskResponseDto> removeTaskFromProject(@PathVariable Long projectId, @PathVariable Long taskId) {
         return ResponseEntity.ok(taskService.removeTaskFromProject(projectId, taskId));
+    }
+
+    @GetMapping("/{projectId}/tasks")
+    @ApiOperation("View the list of tasks from a specific project")
+    public ResponseEntity<List<TaskResponseDto>> getAllTasksFromProject(@PathVariable Long projectId) {
+        return ResponseEntity.ok(taskService.getAllTasksFromProject(projectId));
     }
 
 }

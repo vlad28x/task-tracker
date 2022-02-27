@@ -17,8 +17,10 @@ public abstract class AbstractEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @CreatedDate
+    @Column
     private LocalDateTime createdAt;
     @LastModifiedDate
+    @Column
     private LocalDateTime updatedAt;
 
 }

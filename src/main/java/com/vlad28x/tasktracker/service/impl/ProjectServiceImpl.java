@@ -62,23 +62,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Transactional
     @Override
-    public ProjectResponseDto update(ProjectRequestDto newProject) {
-        if (newProject == null || newProject.getId() == null) {
-            log.error("The project or ID must not be null");
-            throw new BadRequestException("The project or ID must not be null");
-        } else if (projectRepository.existsById(newProject.getId())) {
-            try {
-                return ProjectMapper.projectToProjectResponseDto(projectRepository.save(
-                        ProjectMapper.projectRequestDroToProject(newProject)
-                ));
-            } catch (NestedRuntimeException e) {
-                log.error(e.getMessage(), e);
-                throw new BadRequestException(e.getMessage(), e);
-            }
-        } else {
-            log.error(String.format("The project with ID %s is not found", newProject.getId()));
-            throw new NotFoundException(String.format("The project with ID %s is not found", newProject.getId()));
+    public ProjectResponseDto update(Long id, ProjectRequestDto newProject) {
+        if (newProject == null) {
+            log.error("The project must not be null");
+            throw new BadRequestException("The project must not be null");
         }
+        Project project = findById(id);
+        setPropertiesFromProjectRequestDtoToProject(project, newProject);
+        return ProjectMapper.projectToProjectResponseDto(projectRepository.save(project));
     }
 
     @Transactional
@@ -100,6 +91,14 @@ public class ProjectServiceImpl implements ProjectService {
             log.error(String.format("The project with ID %s is not found", id));
             return new NotFoundException(String.format("The project with ID %s is not found", id));
         });
+    }
+
+    protected void setPropertiesFromProjectRequestDtoToProject(Project project, ProjectRequestDto dto) {
+        if (dto.getName() != null) project.setName(dto.getName());
+        if (dto.getStatus() != null) project.setStatus(dto.getStatus());
+        if (dto.getPriority() != null) project.setPriority(dto.getPriority());
+        project.setStartDate(dto.getStartDate());
+        project.setCompletionDate(dto.getCompletionDate());
     }
 
 }
