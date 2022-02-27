@@ -1,5 +1,6 @@
 package com.vlad28x.tasktracker.service;
 
+import com.vlad28x.tasktracker.dto.FilterDto;
 import com.vlad28x.tasktracker.dto.ProjectRequestDto;
 import com.vlad28x.tasktracker.dto.ProjectResponseDto;
 
@@ -16,5 +17,7 @@ public interface ProjectService {
     ProjectResponseDto update(Long id, ProjectRequestDto newProject);
 
     void delete(Long id);
+
+    List<ProjectResponseDto> getFilteredProjects(List<FilterDto> filters);
 
 }

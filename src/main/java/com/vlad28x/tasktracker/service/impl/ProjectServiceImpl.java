@@ -1,5 +1,6 @@
 package com.vlad28x.tasktracker.service.impl;
 
+import com.vlad28x.tasktracker.dto.FilterDto;
 import com.vlad28x.tasktracker.dto.ProjectRequestDto;
 import com.vlad28x.tasktracker.dto.ProjectResponseDto;
 import com.vlad28x.tasktracker.entity.Project;
@@ -7,6 +8,7 @@ import com.vlad28x.tasktracker.exception.BadRequestException;
 import com.vlad28x.tasktracker.exception.NotFoundException;
 import com.vlad28x.tasktracker.repository.ProjectRepository;
 import com.vlad28x.tasktracker.service.ProjectService;
+import com.vlad28x.tasktracker.service.specification.ProjectSpecificationImpl;
 import com.vlad28x.tasktracker.util.mapper.ProjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +25,11 @@ public class ProjectServiceImpl implements ProjectService {
     private static final Logger log = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
     private final ProjectRepository projectRepository;
+    private final ProjectSpecificationImpl projectSpecification;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectSpecificationImpl projectSpecification) {
         this.projectRepository = projectRepository;
+        this.projectSpecification = projectSpecification;
     }
 
     @Transactional(readOnly = true)
@@ -80,6 +84,20 @@ public class ProjectServiceImpl implements ProjectService {
             throw new BadRequestException("The project ID must not be null");
         }
         projectRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ProjectResponseDto> getFilteredProjects(List<FilterDto> filters) {
+        List<Project> list = null;
+        try {
+            list = projectRepository.findAll(projectSpecification.getSpecificationFromFilters(filters));
+        } catch (NestedRuntimeException e) {
+            log.error(e.getMessage(), e);
+            throw new BadRequestException(e.getMessage());
+        }
+        return list.stream()
+                .map(ProjectMapper::projectToProjectResponseDto)
+                .collect(Collectors.toList());
     }
 
     protected Project findById(Long id) {
