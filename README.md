@@ -43,7 +43,7 @@ spring.datasource.password=postgres
 ./mvnw spring-boot:run
 ```
 
-The app will start running at http://localhost:8080
+The app will start running at http://localhost:8080/
 
 ## Dependencies
 
