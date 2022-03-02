@@ -16,6 +16,7 @@ import org.springframework.core.NestedRuntimeException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,7 +92,7 @@ public class ProjectServiceImpl implements ProjectService {
         List<Project> list = null;
         try {
             list = projectRepository.findAll(projectSpecification.getSpecificationFromFilters(filters));
-        } catch (NestedRuntimeException e) {
+        } catch (NestedRuntimeException | DateTimeParseException | IllegalArgumentException e) {
             log.error(e.getMessage(), e);
             throw new BadRequestException(e.getMessage());
         }

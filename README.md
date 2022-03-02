@@ -57,5 +57,6 @@ The app will start running at http://localhost:8080/
 
 ## To Do
 
-- [ ] Fix bugs in the ProjectSpecification
+- [x] Fix bugs in the ProjectSpecification
+- [ ] Setup Docker compose for deploy
 - [ ] Setup Docker compose for deploy

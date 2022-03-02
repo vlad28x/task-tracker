@@ -4,6 +4,8 @@ import com.vlad28x.tasktracker.dto.FilterDto;
 import com.vlad28x.tasktracker.entity.Project;
 import com.vlad28x.tasktracker.entity.enums.ProjectStatus;
 import com.vlad28x.tasktracker.exception.BadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +17,8 @@ import static org.springframework.data.jpa.domain.Specification.where;
 @Component
 public class ProjectSpecificationImpl implements ProjectSpecification {
 
+    private static final Logger log = LoggerFactory.getLogger(ProjectSpecificationImpl.class);
+
     @Override
     public Specification<Project> getSpecificationFromFilters(List<FilterDto> filters) {
         Specification<Project> specification = where(createSpecification(filters.remove(0)));
@@ -25,6 +29,10 @@ public class ProjectSpecificationImpl implements ProjectSpecification {
     }
 
     private Specification<Project> createSpecification(FilterDto filter) {
+        if (filter.getField() == null || filter.getOperator() == null || (filter.getValue() == null && filter.getValues() == null)) {
+            log.error("Arguments in filter must not null");
+            throw new BadRequestException("Arguments in filter must not null");
+        }
         switch (filter.getOperator()) {
             case EQUALS:
                 return (root, query, criteriaBuilder) ->
@@ -36,28 +44,37 @@ public class ProjectSpecificationImpl implements ProjectSpecification {
                                 castToRequiredType(root.get(filter.getField()).getJavaType(), filter.getValue()));
             case GREATER_THAN:
                 return (root, query, criteriaBuilder) ->
-                        criteriaBuilder.gt(root.get(filter.getField()),
-                                (Number) castToRequiredType(root.get(filter.getField()).getJavaType(), filter.getValue()));
+                        criteriaBuilder.greaterThan(root.get(filter.getField()),
+                                (Comparable) castToRequiredType(root.get(filter.getField()).getJavaType(), filter.getValue()));
             case LESS_THAN:
                 return (root, query, criteriaBuilder) ->
-                        criteriaBuilder.lt(root.get(filter.getField()),
-                                (Number) castToRequiredType(root.get(filter.getField()).getJavaType(), filter.getValue()));
+                        criteriaBuilder.lessThan(root.get(filter.getField()),
+                                (Comparable) castToRequiredType(root.get(filter.getField()).getJavaType(), filter.getValue()));
             case LIKE:
                 return (root, query, criteriaBuilder) ->
                         criteriaBuilder.like(root.get(filter.getField()), "%" + filter.getValue() + "%");
-                /*case BETWEEN:
-                    return (root, query, criteriaBuilder) ->
-                            criteriaBuilder.between(root.get(filter.getField()),
-                                    (String) castToRequiredType(root.get(filter.getField()).getJavaType(), filter.getValues().get(0)),
-                                    (String) castToRequiredType(root.get(filter.getField()).getJavaType(), filter.getValues().get(1)));*/
+            case BETWEEN:
+                return (root, query, criteriaBuilder) -> {
+                    if (filter.getValues().size() != 2) {
+                        log.error("Bad arguments in values");
+                        throw new BadRequestException("Bad arguments in values");
+                    }
+                    return criteriaBuilder.between(root.get(filter.getField()),
+                            (Comparable) castToRequiredType(root.get(filter.getField()).getJavaType(), filter.getValues().get(0)),
+                            (Comparable) castToRequiredType(root.get(filter.getField()).getJavaType(), filter.getValues().get(1)));
+                };
             default:
                 throw new BadRequestException("Unsupported operation");
         }
     }
 
     private <T> Object castToRequiredType(Class<T> fieldType, String value) {
-        if (fieldType.isAssignableFrom(Integer.class)) {
+        if (fieldType.isAssignableFrom(String.class)) {
+            return value;
+        } else if (fieldType.isAssignableFrom(Integer.class)) {
             return Integer.valueOf(value);
+        } else if (fieldType.isAssignableFrom(Long.class)) {
+            return Long.valueOf(value);
         } else if (fieldType.isAssignableFrom(LocalDate.class)) {
             return LocalDate.parse(value);
         } else if (fieldType.isAssignableFrom(ProjectStatus.class)) {
