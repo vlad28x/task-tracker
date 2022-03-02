@@ -38,7 +38,7 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).body(taskService.create(newTask));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @ApiOperation("Update the task")
     public ResponseEntity<TaskResponseDto> updateTask(@PathVariable Long id, @RequestBody TaskRequestDto newTask) {
         return ResponseEntity.ok(taskService.update(id, newTask));

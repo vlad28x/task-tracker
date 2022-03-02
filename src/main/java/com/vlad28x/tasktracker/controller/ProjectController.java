@@ -43,7 +43,7 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.CREATED).body(projectService.create(newProject));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @ApiOperation("Update the project")
     public ResponseEntity<ProjectResponseDto> updateProject(@PathVariable Long id, @RequestBody ProjectRequestDto newProject) {
         return ResponseEntity.ok(projectService.update(id, newProject));
@@ -55,13 +55,13 @@ public class ProjectController {
         projectService.delete(id);
     }
 
-    @PutMapping("/{projectId}/add/{taskId}")
+    @PatchMapping("/{projectId}/add/{taskId}")
     @ApiOperation("Add the task to the project")
     public ResponseEntity<TaskResponseDto> addTaskToProject(@PathVariable Long projectId, @PathVariable Long taskId) {
         return ResponseEntity.ok(taskService.addTaskToProject(projectId, taskId));
     }
 
-    @PutMapping("/{projectId}/remove/{taskId}")
+    @PatchMapping("/{projectId}/remove/{taskId}")
     @ApiOperation("Remove the task from the project")
     public ResponseEntity<TaskResponseDto> removeTaskFromProject(@PathVariable Long projectId, @PathVariable Long taskId) {
         return ResponseEntity.ok(taskService.removeTaskFromProject(projectId, taskId));
@@ -73,7 +73,7 @@ public class ProjectController {
         return ResponseEntity.ok(taskService.getAllTasksFromProject(projectId));
     }
 
-    @GetMapping("/filter")
+    @PostMapping("/filter")
     @ApiOperation("View the list of filtered projects")
     public ResponseEntity<List<ProjectResponseDto>> getFilteredProjects(@RequestBody List<FilterDto> filters) {
         return ResponseEntity.ok(projectService.getFilteredProjects(filters));
