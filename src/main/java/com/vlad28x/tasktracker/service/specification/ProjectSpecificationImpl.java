@@ -1,6 +1,6 @@
 package com.vlad28x.tasktracker.service.specification;
 
-import com.vlad28x.tasktracker.dto.FilterDto;
+import com.vlad28x.tasktracker.dto.FilterNodeDto;
 import com.vlad28x.tasktracker.entity.Project;
 import com.vlad28x.tasktracker.entity.enums.ProjectStatus;
 import com.vlad28x.tasktracker.exception.BadRequestException;
@@ -20,15 +20,18 @@ public class ProjectSpecificationImpl implements ProjectSpecification {
     private static final Logger log = LoggerFactory.getLogger(ProjectSpecificationImpl.class);
 
     @Override
-    public Specification<Project> getSpecificationFromFilters(List<FilterDto> filters) {
+    public Specification<Project> getSpecificationFromFilters(List<FilterNodeDto.Filter> filters) {
+        if (filters == null || filters.size() == 0) {
+            return where(null);
+        }
         Specification<Project> specification = where(createSpecification(filters.remove(0)));
-        for (FilterDto filter : filters) {
+        for (FilterNodeDto.Filter filter : filters) {
             specification = specification.and(createSpecification(filter));
         }
         return specification;
     }
 
-    private Specification<Project> createSpecification(FilterDto filter) {
+    private Specification<Project> createSpecification(FilterNodeDto.Filter filter) {
         if (filter.getField() == null || filter.getOperator() == null || (filter.getValue() == null && filter.getValues() == null)) {
             log.error("Arguments in filter must not null");
             throw new BadRequestException("Arguments in filter must not null");

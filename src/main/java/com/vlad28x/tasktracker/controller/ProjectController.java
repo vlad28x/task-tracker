@@ -1,6 +1,6 @@
 package com.vlad28x.tasktracker.controller;
 
-import com.vlad28x.tasktracker.dto.FilterDto;
+import com.vlad28x.tasktracker.dto.FilterNodeDto;
 import com.vlad28x.tasktracker.dto.ProjectRequestDto;
 import com.vlad28x.tasktracker.dto.ProjectResponseDto;
 import com.vlad28x.tasktracker.dto.TaskResponseDto;
@@ -75,8 +75,8 @@ public class ProjectController {
 
     @PostMapping("/filter")
     @ApiOperation("View the list of filtered projects")
-    public ResponseEntity<List<ProjectResponseDto>> getFilteredProjects(@RequestBody List<FilterDto> filters) {
-        return ResponseEntity.ok(projectService.getFilteredProjects(filters));
+    public ResponseEntity<List<ProjectResponseDto>> getFilteredProjects(@RequestBody FilterNodeDto filterNodeDto) {
+        return ResponseEntity.ok(projectService.getFilteredProjects(filterNodeDto));
     }
 
 }

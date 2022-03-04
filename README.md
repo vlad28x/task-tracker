@@ -8,6 +8,7 @@ Swagger UI: https://task-tracker-vlad28x.herokuapp.com/swagger-ui/
 
 ## Features
 
+* Logging using Logback
 * Using Swagger for automated API documentation
 * The logic level covers unit tests
 * Ability to create/view/edit/delete information about projects
@@ -58,5 +59,5 @@ The app will start running at http://localhost:8080/
 ## To Do
 
 - [x] Fix bugs in the ProjectSpecification
-- [ ] Setup Docker compose for deploy
+- [x] Add project sorting
 - [ ] Setup Docker compose for deploy

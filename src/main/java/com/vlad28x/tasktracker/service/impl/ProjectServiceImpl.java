@@ -1,6 +1,6 @@
 package com.vlad28x.tasktracker.service.impl;
 
-import com.vlad28x.tasktracker.dto.FilterDto;
+import com.vlad28x.tasktracker.dto.FilterNodeDto;
 import com.vlad28x.tasktracker.dto.ProjectRequestDto;
 import com.vlad28x.tasktracker.dto.ProjectResponseDto;
 import com.vlad28x.tasktracker.entity.Project;
@@ -13,6 +13,9 @@ import com.vlad28x.tasktracker.util.mapper.ProjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.NestedRuntimeException;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,11 +91,21 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectResponseDto> getFilteredProjects(List<FilterDto> filters) {
+    public List<ProjectResponseDto> getFilteredProjects(FilterNodeDto filterNodeDto) {
         List<Project> list = null;
         try {
-            list = projectRepository.findAll(projectSpecification.getSpecificationFromFilters(filters));
-        } catch (NestedRuntimeException | DateTimeParseException | IllegalArgumentException e) {
+            Specification<Project> specification = projectSpecification.getSpecificationFromFilters(filterNodeDto.getFilters());
+            FilterNodeDto.Sorting sort = filterNodeDto.getSort();
+            if (sort != null) {
+                Sort.Direction direction = sort.getDirection();
+                if (direction == null) {
+                    direction = Sort.Direction.ASC;
+                }
+                list = projectRepository.findAll(specification, Sort.by(direction, sort.getField()));
+            } else {
+                list = projectRepository.findAll(specification);
+            }
+        } catch (NestedRuntimeException | DateTimeParseException | IllegalArgumentException | PropertyReferenceException e) {
             log.error(e.getMessage(), e);
             throw new BadRequestException(e.getMessage());
         }
